@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: server
-        image: davidhei/netflix:frontend-v0.0.3
+        image: davidhei/netflix:frontend-v0.0.2
         env:
           - name: MOVIE_CATALOG_SERVICE
             value: http://netflix-catalog-service:8080
