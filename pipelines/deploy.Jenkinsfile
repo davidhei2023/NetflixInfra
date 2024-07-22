@@ -4,19 +4,19 @@ pipeline {
     }
 
     parameters {
-        string(name: 'SERVICE_NAME', defaultValue: '', description: '')
-        string(name: 'IMAGE_FULL_NAME_PARAM', defaultValue: '', description: '')
+        string(name: 'SERVICE_NAME', defaultValue: '', description: 'Service name to deploy')
+        string(name: 'IMAGE_FULL_NAME_PARAM', defaultValue: '', description: 'Full name of the Docker image')
     }
 
     stages {
         stage('Clean Workspace') {
             steps {
-                cleanWs()
+                cleanWs()  // Clean the workspace before starting the build
             }
         }
         stage('Checkout SCM') {
             steps {
-                checkout scm
+                checkout scm  // Check out the source code
             }
         }
         stage('Git setup') {
@@ -30,7 +30,7 @@ pipeline {
         stage('Update YAML manifests') {
             steps {
                 script {
-                    def yamlFilePath = "${params.SERVICE_NAME}/frontend.yaml"
+                    def yamlFilePath = "NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"  // Correct path to the YAML file
                     sh """
                     if [ -f ${yamlFilePath} ]; then
                         sed -i 's|image: .*|image: ${params.IMAGE_FULL_NAME_PARAM}|' ${yamlFilePath}
