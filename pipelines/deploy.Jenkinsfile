@@ -1,34 +1,23 @@
 pipeline {
-    agent any
+    agent {
+        label 'general'
+    }
 
     parameters {
-        string(name: 'SERVICE_NAME', defaultValue: '', description: 'Name of the service directory')
-        string(name: 'IMAGE_FULL_NAME_PARAM', defaultValue: '', description: 'Full name of the Docker image to use')
+        string(name: 'SERVICE_NAME', defaultValue: '', description: '')
+        string(name: 'IMAGE_FULL_NAME_PARAM', defaultValue: '', description: '')
     }
 
     stages {
         stage('Deploy') {
             steps {
-                script {
-                    dir("${params.SERVICE_NAME}") {
-                        // Print the current directory and list its contents for debugging
-                        sh 'pwd'
-                        sh 'ls -la'
-
-                        // Update the correct YAML file
-                        def yamlFile = 'frontend.yaml'
-                        if (fileExists(yamlFile)) {
-                            sh """
-                            sed -i "s|image: .*|image: ${params.IMAGE_FULL_NAME_PARAM}|" ${yamlFile}
-                            git add ${yamlFile}
-                            git commit -m "Jenkins deploy ${params.SERVICE_NAME} ${params.IMAGE_FULL_NAME_PARAM}"
-                            git push origin main
-                            """
-                        } else {
-                            error "Error: ${yamlFile} not found in $(pwd)"
-                        }
-                    }
-                }
+                sh '''
+                cd $SERVICE_NAME
+                sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" deployment.yaml
+                git add deployment.yaml
+                git commit -m "Jenkins deploy $SERVICE_NAME $IMAGE_FULL_NAME_PARAM"
+                git push origin main
+                '''
             }
         }
     }
