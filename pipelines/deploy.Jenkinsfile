@@ -9,14 +9,14 @@ pipeline {
     }
 
     stages {
-        stage('Checkout SCM') {
-            steps {
-                checkout scm
-            }
-        }
         stage('Clean Workspace') {
             steps {
                 cleanWs()
+            }
+        }
+        stage('Checkout SCM') {
+            steps {
+                checkout scm
             }
         }
         stage('Git setup') {
@@ -29,12 +29,19 @@ pipeline {
         }
         stage('Update YAML manifests') {
             steps {
-                sh '''
-                FILE="NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"
-                    sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" $FILE
-                    git add $FILE
-                    git commit -m "Jenkins deploy ${SERVICE_NAME} ${IMAGE_FULL_NAME_PARAM}"
-                '''
+                script {
+                    def yamlFilePath = "NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"
+                    sh """
+                    if [ -f ${yamlFilePath} ]; then
+                        sed -i 's|image: .*|image: ${params.IMAGE_FULL_NAME_PARAM}|' ${yamlFilePath}
+                        git add ${yamlFilePath}
+                        git commit -m 'Jenkins deploy ${params.SERVICE_NAME} ${params.IMAGE_FULL_NAME_PARAM}'
+                    else
+                        echo 'Error: ${yamlFilePath} not found'
+                        exit 1
+                    fi
+                    """
+                }
             }
         }
         stage('Git push') {
