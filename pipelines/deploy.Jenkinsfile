@@ -9,6 +9,11 @@ pipeline {
     }
 
     stages {
+        stage('Git setup') {
+            steps {
+                sh 'git checkout -b main origin/main'
+            }
+
         stage('Deploy') {
             steps {
                 sh '''
