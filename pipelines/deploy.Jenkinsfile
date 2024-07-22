@@ -11,7 +11,12 @@ pipeline {
     stages {
         stage('Clean Workspace') {
             steps {
-                cleanWs()
+                cleanWs()  // Clean the workspace before starting the build
+            }
+        }
+        stage('Checkout SCM') {
+            steps {
+                checkout scm  // Check out the source code
             }
         }
         stage('Git setup') {
