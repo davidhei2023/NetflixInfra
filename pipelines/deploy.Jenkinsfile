@@ -9,20 +9,34 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
         stage('Git setup') {
             steps {
-                sh 'git checkout main'
-                sh 'git pull'
+                sh '''
+                git checkout main
+                git pull origin main --rebase  // Rebase to reconcile divergent branches
+                '''
             }
         }
         stage('Update YAML manifests') {
             steps {
-                sh '''
-                cd k8s/NetflixMovieCatalog
-                sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" deployment.yaml
-                git add deployment.yaml
-                git commit -m "Jenkins deploy $SERVICE_NAME $IMAGE_FULL_NAME_PARAM"
-                '''
+                script {
+                    def yamlFilePath = "${params.SERVICE_NAME}/frontend.yaml"
+                    sh """
+                    if [ -f ${yamlFilePath} ]; then
+                        sed -i 's|image: .*|image: ${params.IMAGE_FULL_NAME_PARAM}|' ${yamlFilePath}
+                        git add ${yamlFilePath}
+                        git commit -m 'Jenkins deploy ${params.SERVICE_NAME} ${params.IMAGE_FULL_NAME_PARAM}'
+                    else
+                        echo 'Error: ${yamlFilePath} not found'
+                        exit 1
+                    fi
+                    """
+                }
             }
         }
         stage('Git push') {
