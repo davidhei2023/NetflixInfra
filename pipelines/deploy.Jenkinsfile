@@ -16,29 +16,24 @@ pipeline {
         }
         stage('Clean Workspace') {
             steps {
-                cleanWs()  // Clean the workspace before starting the build
+                cleanWs()
             }
         }
         stage('Git setup') {
             steps {
                 sh '''
                 git checkout main
-                git pull origin main --rebase
+                git pull origin main
                 '''
             }
         }
         stage('Update YAML manifests') {
             steps {
                 sh '''
-                FILE="NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"
-                if [ -f "$FILE" ]; then
-                    sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" $FILE
+                DEPLOYMENT="NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"
+                    sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" $DEPLOYMENT
                     git add $FILE
                     git commit -m "Jenkins deploy ${SERVICE_NAME} ${IMAGE_FULL_NAME_PARAM}"
-                else
-                    echo "Error: $FILE not found"
-                    exit 1
-                fi
                 '''
             }
         }
