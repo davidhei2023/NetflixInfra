@@ -30,7 +30,7 @@ pipeline {
         stage('Update YAML manifests') {
             steps {
                 script {
-                    def yamlFilePath = "NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"  // Correct path to the YAML file
+                    def yamlFilePath = "k8s/NetflixMovieCatalog/deployment.yaml"  // Correct path to the YAML file
                     sh """
                     if [ -f ${yamlFilePath} ]; then
                         sed -i 's|image: .*|image: ${params.IMAGE_FULL_NAME_PARAM}|' ${yamlFilePath}
