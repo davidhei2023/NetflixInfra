@@ -23,15 +23,15 @@ pipeline {
             steps {
                 sh '''
                 git checkout main
-                git pull origin main
+                git pull origin main --rebase
                 '''
             }
         }
         stage('Update YAML manifests') {
             steps {
                 sh '''
-                DEPLOYMENT="NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"
-                    sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" $DEPLOYMENT
+                FILE="NetflixInfra/k8s/NetflixMovieCatalog/deployment.yaml"
+                    sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" $FILE
                     git add $FILE
                     git commit -m "Jenkins deploy ${SERVICE_NAME} ${IMAGE_FULL_NAME_PARAM}"
                 '''
