@@ -10,7 +10,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                cd k8s/$SERVICE_NAME
+                cd $SERVICE_NAME
                 sed -i "s|image: .*|image: ${IMAGE_FULL_NAME_PARAM}|" deployment.yaml
                 git add deployment.yaml
                 git commit -m "Jenkins deploy $SERVICE_NAME $IMAGE_FULL_NAME_PARAM"
