@@ -11,19 +11,19 @@ pipeline {
     stages {
         stage('Clean Workspace') {
             steps {
-                cleanWs()  // Clean the workspace before starting the build
+                cleanWs()
             }
         }
         stage('Checkout SCM') {
             steps {
-                checkout scm  // Check out the source code
+                checkout scm
             }
         }
         stage('Git setup') {
             steps {
                 sh '''
                 git checkout main
-                git pull origin main --rebase  // Rebase to reconcile divergent branches
+                git pull origin main --rebase
                 '''
             }
         }
