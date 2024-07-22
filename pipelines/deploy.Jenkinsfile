@@ -11,8 +11,8 @@ pipeline {
     stages {
         stage('Git setup') {
             steps {
-                'git checkout main
-                 git pull'
+                sh 'git checkout main'
+                sh 'git pull'
             }
         }
         stage('Update YAML manifests') {
