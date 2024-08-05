@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: server
-        image: davidhei/netflix-frontend-app:v1.0.25
+        image: davidhei/netflix-frontend-app:v1.0.26
 ---
 apiVersion: v1
 kind: Service
