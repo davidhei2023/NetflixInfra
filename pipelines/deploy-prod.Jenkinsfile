@@ -22,7 +22,7 @@ pipeline {
         stage('Git setup') {
             steps {
                 sh '''
-                git checkout main
+                git checkout dev
                 git pull origin main --rebase
                 '''
             }
@@ -32,14 +32,9 @@ pipeline {
                 script {
                     def yamlFilePath = "k8s/NetflixMovieCatalog/deployment.yaml"  // Correct path to the YAML file
                     sh """
-                    if [ -f ${yamlFilePath} ]; then
                         sed -i 's|image: .*|image: ${params.IMAGE_FULL_NAME_PARAM}|' ${yamlFilePath}
                         git add ${yamlFilePath}
                         git commit -m 'Jenkins deploy ${params.SERVICE_NAME} ${params.IMAGE_FULL_NAME_PARAM}'
-                    else
-                        echo 'Error: ${yamlFilePath} not found'
-                        exit 1
-                    fi
                     """
                 }
             }
